@@ -44,7 +44,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
 .slide { position: absolute; inset: 0; will-change: transform; }
 .slide .bg { position: absolute; inset: -40px; background-size: cover; background-position: center; filter: blur(34px) brightness(.38) saturate(1.2); }
 .slide .poster { position: absolute; object-fit: cover; background: #000; }
-.slide .shade { position: absolute; left: 0; right: 0; bottom: 0; height: 46%; background: linear-gradient(to top, rgba(0,0,0,.86), rgba(0,0,0,.45) 55%, transparent); pointer-events: none; }
+.slide .shade { position: absolute; left: 0; right: 0; bottom: 0; height: 38%; background: linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,.28) 55%, transparent); pointer-events: none; }
+.slide .shade.top { top: 0; bottom: auto; height: calc(var(--st) + 90px); background: linear-gradient(to bottom, rgba(0,0,0,.45), transparent); }
 .info { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 92px calc(var(--sb) + 30px) max(16px, var(--sl)); display: grid; gap: 8px; pointer-events: none; }
 .who { font: 600 13px/1 var(--mono); letter-spacing: .02em; color: var(--gold); text-transform: uppercase; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .who .badge { background: var(--gold); color: var(--gold-ink); padding: 4px 7px 3px; border-radius: 3px; letter-spacing: .06em; }
@@ -53,9 +54,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
 .tag { font: 500 11px/1 var(--mono); padding: 5px 7px; border: 1px solid rgba(255,255,255,.22); border-radius: 999px; color: #E6E3DC; background: rgba(0,0,0,.25); }
 .meta { font: 400 12px/1 var(--mono); color: var(--mute); }
 
-#playerWrap { position: absolute; left: 0; top: 0; opacity: 0; transition: opacity .25s; pointer-events: none; will-change: transform; }
+#playerWrap { position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none; overflow: hidden; will-change: transform; }
 #playerWrap.on { opacity: 1; }
-#playerWrap iframe { width: 100%; height: 100%; display: block; border: 0; }
+#playerWrap iframe { position: absolute; display: block; border: 0; }
+#infoTrack { position: absolute; inset: 0; pointer-events: none; will-change: transform; }
 #shield { position: absolute; inset: 0; z-index: 2; touch-action: none; }
 #shield.pass { pointer-events: none; }
 
@@ -83,9 +85,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
 #bar .fill { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--gold); }
 #time { position: fixed; z-index: 4; left: max(16px, var(--sl)); bottom: calc(var(--sb) + 12px); font: 500 10.5px/1 var(--mono); color: var(--mute); }
 
-#pill { position: fixed; z-index: 6; left: 50%; top: calc(var(--st) + 96px); transform: translateX(-50%); display: flex; gap: 8px; align-items: center; padding: 10px 14px; border-radius: 999px; background: rgba(243,241,236,.94); color: var(--ink); font: 600 13px/1 var(--body); box-shadow: 0 8px 30px rgba(0,0,0,.4); white-space: nowrap; }
-#pill svg { width: 18px; height: 18px; }
-#bigicon { position: fixed; z-index: 3; left: 50%; top: 50%; width: 84px; height: 84px; margin: -42px 0 0 -42px; border-radius: 50%; background: rgba(0,0,0,.45); display: grid; place-items: center; pointer-events: none; opacity: 0; transition: opacity .2s; }
+#bigicon { position: fixed; z-index: 3; left: 50%; top: 50%; width: 72px; height: 72px; margin: -36px 0 0 -36px; display: grid; place-items: center; pointer-events: none; opacity: 0; transition: opacity .15s; }
+#bigicon svg { filter: drop-shadow(0 2px 12px rgba(0,0,0,.6)); opacity: .75; }
 #bigicon.show { opacity: 1; }
 #bigicon svg { width: 40px; height: 40px; }
 #burst { position: fixed; z-index: 6; left: 50%; top: 42%; transform: translate(-50%,-50%) scale(.6); font: 800 34px/1 var(--display); font-stretch: 70%; letter-spacing: .02em; color: var(--gold); opacity: 0; pointer-events: none; text-shadow: 0 4px 30px rgba(0,0,0,.6); }
@@ -140,6 +141,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
 <div id="stage">
   <div id="track"></div>
   <div id="playerWrap"><div id="player"></div></div>
+  <div id="infoTrack"></div>
   <div id="shield" aria-label="Video: desliza para cambiar, toca para pausar"></div>
 </div>
 
@@ -174,7 +176,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
 
 <div id="bar" aria-label="Progreso"><div class="rail"><div class="fill" id="fill"></div></div></div>
 <div id="time"></div>
-<button id="pill" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg><span id="pillText">Toca para activar el sonido</span></button>
 <div id="bigicon"><svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div>
 <div id="burst">GUARDADO</div>
 <div id="toast" role="status"></div>
@@ -232,7 +233,7 @@ let player = null, playerReady = false, muted = true, curId = null, loadAt = 0, 
 const fmt = s => { s = Math.max(0, Math.floor(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); };
 const views = v => !v ? '' : v >= 1e6 ? (v / 1e6).toFixed(1).replace('.0', '') + 'M vistas' : v >= 1e3 ? Math.round(v / 1e3) + 'K vistas' : v + ' vistas';
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const thumb = it => `https://i.ytimg.com/vi/${it.id}/${it.s ? 'oar2.jpg' : 'hqdefault.jpg'}`;
+const thumb = it => `https://i.ytimg.com/vi/${it.id}/hqdefault.jpg`;
 const ytUrl = it => it.s ? `https://www.youtube.com/shorts/${it.id}` : `https://www.youtube.com/watch?v=${it.id}${kb.resume[it.id] ? '&t=' + Math.floor(kb.resume[it.id]) : ''}`;
 let toastT;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2600); }
@@ -293,26 +294,41 @@ function learn(it, w) {
 }
 
 // ---------- render ----------
-const stage = $('#stage'), track = $('#track'), pw = $('#playerWrap');
+const stage = $('#stage'), track = $('#track'), pw = $('#playerWrap'), infoTrack = $('#infoTrack');
+const moveTracks = (y, tr) => [track, infoTrack].forEach(el => { el.style.transition = tr || 'none'; el.style.transform = y ? `translateY(${y}px)` : ''; });
 const feed = () => feeds[mode];
 const cur = () => BYID.get(feed().q[feed().i]);
 
+// Caja del video. Shorts: llenan toda la pantalla como TikTok (recorta un poco los lados en teléfonos altos).
 function geom(it) {
   const W = stage.clientWidth, H = stage.clientHeight;
-  if (it.s) { let w = Math.min(W, H * 9 / 16), h = w * 16 / 9; if (h > H) { h = H; w = h * 9 / 16; } return { x: (W - w) / 2, y: (H - h) / 2, w, h }; }
+  if (it.s) { const h = H, w = h * 9 / 16; return { x: (W - w) / 2, y: 0, w, h }; }
   let w = Math.min(W, 1100), h = w * 9 / 16; if (h > H * 0.62) { h = H * 0.62; w = h * 16 / 9; }
-  return { x: (W - w) / 2, y: Math.max(H * 0.2, (H - h) / 2 - H * 0.07), w, h };
+  return { x: (W - w) / 2, y: Math.round((H - h) / 2 - H * 0.06), w, h };
+}
+// El iframe es más alto que la caja visible: los controles y el título de YouTube quedan fuera del recorte.
+const CROP = 110;
+function placePlayer(g) {
+  const W = stage.clientWidth, H = stage.clientHeight;
+  const cx = Math.max(0, g.x), cy = Math.max(0, g.y), cw = Math.min(W, g.x + g.w) - cx, ch = Math.min(H, g.y + g.h) - cy;
+  Object.assign(pw.style, { left: cx + 'px', top: cy + 'px', width: cw + 'px', height: ch + 'px' });
+  const f = pw.querySelector('iframe');
+  if (f) Object.assign(f.style, { left: (g.x - cx) + 'px', top: (g.y - cy - CROP) + 'px', width: g.w + 'px', height: (g.h + CROP * 2) + 'px' });
 }
 
 function slideHTML(it, k) {
-  const g = geom(it), f = feed();
-  const isNext = mode === 'more' && f.seed && it.ser && it.ser === f.seed.ser && it.pn > f.seed.pn;
-  const badge = isNext ? `<span class="badge">Parte ${it.pn}</span>` : it.pn && it.ser ? `<span class="badge">Parte ${it.pn}</span>` : '';
-  const meta = [it.s ? 'Short' : fmt(it.d), views(it.v), it.ago].filter(Boolean).join(' · ');
+  const g = geom(it);
   return `<div class="slide" data-k="${k}" style="transform:translateY(${k * 100}%)">
     <div class="bg" style="background-image:url('https://i.ytimg.com/vi/${it.id}/hqdefault.jpg')"></div>
-    <img class="poster" alt="" src="${thumb(it)}" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${it.id}/hqdefault.jpg'" style="left:${g.x}px;top:${g.y}px;width:${g.w}px;height:${g.h}px">
-    <div class="shade"></div>
+    <img class="poster" alt="" src="${thumb(it)}" style="left:${g.x}px;top:${g.y}px;width:${g.w}px;height:${g.h}px">
+  </div>`;
+}
+function infoHTML(it, k) {
+  const f = feed();
+  const badge = it.pn && it.ser ? `<span class="badge">Parte ${it.pn}</span>` : '';
+  const meta = [it.s ? 'Short' : fmt(it.d), views(it.v), it.ago].filter(Boolean).join(' · ');
+  return `<div class="slide" style="transform:translateY(${k * 100}%)">
+    <div class="shade top"></div><div class="shade"></div>
     <div class="info">
       <div class="who">${badge}<span>${esc(it.sp || it.ch)}</span></div>
       <h2 class="title">${esc(it.t)}</h2>
@@ -326,8 +342,9 @@ function render() {
   const f = feed();
   if (mode === 'foryou' && f.i > f.q.length - 6) extendForYou();
   if (mode === 'more' && f.i > f.q.length - 4) { const extra = buildMore(BYID.get(f.q[f.q.length - 1]) || f.seed, false).q.filter(id => !f.q.includes(id)); f.q.push(...extra.slice(0, 30)); }
-  const html = [-1, 0, 1].map(k => { const it = BYID.get(f.q[f.i + k]); return it ? slideHTML(it, k) : ''; }).join('');
-  track.innerHTML = html;
+  const items = [-1, 0, 1].map(k => [BYID.get(f.q[f.i + k]), k]).filter(x => x[0]);
+  track.innerHTML = items.map(([it, k]) => slideHTML(it, k)).join('');
+  infoTrack.innerHTML = items.map(([it, k]) => infoHTML(it, k)).join('');
   const it = cur(); if (!it) return;
   $('#ytLink').href = ytUrl(it);
   $('#plus').classList.toggle('saved', kb.saved.some(s => s.id === it.id));
@@ -341,26 +358,30 @@ function render() {
 
 function loadCurrent() {
   const it = cur(); if (!it || !playerReady) return;
-  const g = geom(it);
-  pw.classList.remove('on'); pw.style.transform = '';
-  Object.assign(pw.style, { left: g.x + 'px', top: g.y + 'px', width: g.w + 'px', height: g.h + 'px' });
-  curId = it.id; loadAt = Date.now(); playing = false;
+  pw.classList.remove('on'); pw.style.transition = 'none'; pw.style.transform = '';
+  placePlayer(geom(it));
+  curId = it.id; loadAt = Date.now(); playing = false; userPaused = false; $('#bigicon').classList.remove('show');
   const start = !it.s && kb.resume[it.id] > 15 ? kb.resume[it.id] - 3 : 0;
   player.loadVideoById({ videoId: it.id, startSeconds: start });
   if (muted) player.mute(); else player.unMute();
   $('#fill').style.width = '0';
   $('#time').textContent = '';
-  setTimeout(() => {   // si iOS bloqueó el audio, sigue en silencio y pide un toque
-    if (curId === it.id && !playing && player.getPlayerState?.() !== 1) { player.mute(); muted = true; player.playVideo(); updateMute(); }
-  }, 1800);
+  setTimeout(() => {   // nunca se queda parado: si el navegador frenó el audio, sigue en silencio hasta el próximo toque
+    if (curId === it.id && !playing && !userPaused && player.getPlayerState?.() !== 1) { player.mute(); muted = true; player.playVideo(); updateMute(); }
+  }, 1500);
 }
 
-function go(d) {
+function saveResume() { const it = cur(); if (it && !it.s && player?.getCurrentTime) { const t = player.getCurrentTime(); if (t > 15) { kb.resume[it.id] = t; persist(); } } }
+// Cambia de video ya (el video empieza a cargar mientras corre la animación) y redibuja al final.
+function advance(d, animate) {
   const f = feed(), n = f.i + d;
-  if (n < 0 || n >= f.q.length) { snapBack(); return; }
-  const it = cur(); if (it && !it.s && player?.getCurrentTime) { const t = player.getCurrentTime(); if (t > 15) { kb.resume[it.id] = t; persist(); } }
-  f.i = n; render(); loadCurrent();
+  if (n < 0 || n >= f.q.length) { snapBack(); return false; }
+  saveResume();
+  f.i = n; loadCurrent();
+  if (!animate) render();
+  return true;
 }
+function go(d) { advance(d, false); }
 
 function setMode(m) {
   if (m === mode || (m === 'more' && !feeds.more.seed)) return;
@@ -389,53 +410,48 @@ shield.addEventListener('pointerdown', e => { drag = { y0: e.clientY, x0: e.clie
 shield.addEventListener('pointermove', e => {
   if (!drag) return;
   drag.dy = e.clientY - drag.y0;
-  if (Math.abs(drag.dy) > 6) { track.style.transition = 'none'; track.style.transform = `translateY(${drag.dy}px)`; pw.style.transition = 'none'; pw.style.transform = `translateY(${drag.dy}px)`; }
+  if (Math.abs(drag.dy) > 6) { moveTracks(drag.dy); pw.style.transition = 'none'; pw.style.transform = `translateY(${drag.dy}px)`; }
 });
 const endDrag = e => {
   if (!drag) return;
   const { dy, t0, x0, y0 } = drag; drag = null;
   const dist = Math.hypot(e.clientX - x0, e.clientY - y0), dt = Date.now() - t0;
   const H = stage.clientHeight;
-  if (dist < 10 && dt < 350) { track.style.transform = ''; pw.style.transform = ''; onTap(); return; }
+  if (dist < 10 && dt < 350) { moveTracks(0); pw.style.transform = ''; onTap(); return; }
   const fast = Math.abs(dy) / dt > 0.45;
   if (Math.abs(dy) > H * 0.18 || (fast && Math.abs(dy) > 40)) {
-    const dir = dy < 0 ? 1 : -1, f = feed();
-    if (f.i + dir < 0 || f.i + dir >= f.q.length) { snapBack(); return; }
-    track.style.transition = 'transform .22s ease-out'; track.style.transform = `translateY(${-dir * H}px)`;
-    pw.style.transition = 'transform .22s ease-out'; pw.style.transform = `translateY(${-dir * H}px)`;
-    setTimeout(() => { track.style.transition = 'none'; track.style.transform = ''; pw.style.transition = 'none'; go(dir); }, 220);
+    const dir = dy < 0 ? 1 : -1;
+    if (feed().i + dir < 0 || feed().i + dir >= feed().q.length) { snapBack(); return; }
+    moveTracks(-dir * H, 'transform .2s ease-out');
+    advance(dir, true);
+    setTimeout(() => { moveTracks(0); render(); }, 200);
   } else snapBack();
 };
 shield.addEventListener('pointerup', endDrag);
 shield.addEventListener('pointercancel', () => { drag = null; snapBack(); });
-function snapBack() { track.style.transition = 'transform .2s'; track.style.transform = ''; pw.style.transition = 'transform .2s'; pw.style.transform = ''; }
+function snapBack() { moveTracks(0, 'transform .2s'); pw.style.transition = 'transform .2s'; pw.style.transform = ''; }
 
 function onTap() {
   const now = Date.now();
   if (now - lastTap < 300) { clearTimeout(tapT); lastTap = 0; const it = cur(); if (it) savePlus(it, false); return; }
   lastTap = now;
   tapT = setTimeout(() => {
-    if (!playerReady) return;
-    if (muted) { unmute(); return; }
-    const st = player.getPlayerState();
-    if (st === 1) { player.pauseVideo(); flashIcon(false); } else { player.playVideo(); flashIcon(true); }
+    if (!playerReady || Date.now() - unlockedAt < 700) return;   // ese toque ya sirvió para activar el sonido
+    if (player.getPlayerState() === 1) { userPaused = true; player.pauseVideo(); $('#bigicon').classList.add('show'); }
+    else { userPaused = false; player.playVideo(); $('#bigicon').classList.remove('show'); }
   }, 260);
 }
-function flashIcon(play) {
-  const b = $('#bigicon'); b.innerHTML = play ? '<svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>' : '<svg viewBox="0 0 24 24" fill="#fff"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
-  b.classList.add('show'); setTimeout(() => b.classList.remove('show'), 500);
+// El navegador solo deja sonar el audio después del primer contacto con la pantalla.
+// Ese primer contacto (deslizar, tocar, lo que sea) activa el sonido para el resto de la sesión, sin botones.
+let unlockedAt = 0, userPaused = false, wantSound = true;
+function unlockAudio() {
+  if (!playerReady || !muted || !wantSound) return;
+  muted = false; unlockedAt = Date.now();
+  player.unMute(); if (!userPaused) player.playVideo(); updateMute();
+  setTimeout(() => { if (!muted && !userPaused && player.getPlayerState() !== 1) { player.mute(); muted = true; player.playVideo(); updateMute(); } }, 1200);
 }
-function unmute() {
-  muted = false; player.unMute(); player.playVideo(); updateMute();
-  setTimeout(() => {   // iOS a veces exige tocar el video en sí
-    if (!muted && player.getPlayerState() !== 1) {
-      shield.classList.add('pass'); $('#pillText').textContent = 'Toca el video una vez para el sonido'; $('#pill').hidden = false;
-    }
-  }, 1000);
-}
+['touchend', 'pointerup', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, unlockAudio, { capture: true, passive: true }));
 function updateMute() {
-  $('#pill').hidden = !muted;
-  if (muted) $('#pillText').textContent = 'Toca para activar el sonido';
   $('#muteWave').setAttribute('d', muted ? 'M16 9l5 6M21 9l-5 6' : 'M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13');
 }
 
@@ -447,14 +463,14 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'ArrowUp' || e.key === 'k') go(-1);
   else if (e.key === ' ') { e.preventDefault(); onTapImmediate(); }
   else if (e.key === '+' || e.key === '=') { const it = cur(); if (it) savePlus(it, true); }
-  else if (e.key === 'm') { muted ? unmute() : (muted = true, player.mute(), updateMute()); }
+  else if (e.key === 'm') toggleSound();
 });
-function onTapImmediate() { if (muted) return unmute(); const st = player.getPlayerState(); st === 1 ? player.pauseVideo() : player.playVideo(); }
+function onTapImmediate() { if (player.getPlayerState() === 1) { userPaused = true; player.pauseVideo(); $('#bigicon').classList.add('show'); } else { userPaused = false; player.playVideo(); $('#bigicon').classList.remove('show'); } }
+function toggleSound() { if (muted) { wantSound = true; unlockAudio(); } else { wantSound = false; muted = true; player.mute(); updateMute(); } }
 
 $('#plus').addEventListener('click', () => { const it = cur(); if (it) savePlus(it, true); });
 $('#nextBtn').addEventListener('click', () => go(1));
-$('#pill').addEventListener('click', () => unmute());
-$('#muteBtn').addEventListener('click', () => { if (muted) unmute(); else { muted = true; player.mute(); updateMute(); } });
+$('#muteBtn').addEventListener('click', e => { e.stopPropagation(); toggleSound(); });
 $('#tabForYou').addEventListener('click', () => setMode('foryou'));
 $('#tabMore').addEventListener('click', () => setMode('more'));
 
@@ -481,7 +497,7 @@ window.onYouTubeIframeAPIReady = () => {
     events: {
       onReady: () => { playerReady = true; player.mute(); if (CAT.length) start(); },
       onStateChange: e => {
-        if (e.data === 1) { playing = true; pw.classList.add('on'); if (shield.classList.contains('pass') && !player.isMuted()) { shield.classList.remove('pass'); muted = false; updateMute(); } }
+        if (e.data === 1) { playing = true; pw.classList.add('on'); }
         if (e.data === 0) { const it = cur(); if (it?.s) { player.seekTo(0); player.playVideo(); } else go(1); }
       },
       onError: () => { if (curId) { kb.bad[curId] = 1; persist(); } go(1); },
@@ -557,7 +573,7 @@ const s = document.createElement('script'); s.src = 'https://www.youtube.com/ifr
 s.onerror = () => { $('#splashMsg').textContent = 'No pude conectar con YouTube. Revisa tu conexión.'; };
 document.head.appendChild(s);
 boot();
-addEventListener('resize', () => { if (cur()) { render(); const g = geom(cur()); Object.assign(pw.style, { left: g.x + 'px', top: g.y + 'px', width: g.w + 'px', height: g.h + 'px' }); } });
+addEventListener('resize', () => { if (cur()) { render(); placePlayer(geom(cur())); } });
 document.addEventListener('visibilitychange', () => { if (document.hidden && playerReady) { const it = cur(); if (it && !it.s) { kb.resume[it.id] = player.getCurrentTime(); persist(); } } });
 </script>
 </body>
