@@ -1,0 +1,35 @@
+name: Actualizar catálogo y publicar
+on:
+  schedule:
+    - cron: "0 */8 * * *"   # cada 8 horas: videos nuevos de tus fuentes
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency: { group: pages, cancel-in-progress: false }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Construir catálogo
+        run: node scripts/build-catalog.mjs
+      - name: Guardar catálogo
+        run: |
+          git config user.name "palanca-bot"
+          git config user.email "palanca-bot@users.noreply.github.com"
+          git add catalog.json
+          git diff --cached --quiet || git commit -m "Catálogo actualizado [skip ci]"
+          git push || true
+      - name: Preparar sitio
+        run: mkdir _site && cp -r index.html manifest.webmanifest catalog.json icons _site/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: "_site" }
+      - id: deployment
+        uses: actions/deploy-pages@v4

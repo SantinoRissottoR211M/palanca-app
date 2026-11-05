@@ -1,0 +1,193 @@
+{
+  "_nota": "Configuración pública del feed: qué fuentes entran y qué temas pesan más. Sin datos privados. La mantiene Claude.",
+  "actualizado": "2026-11-05",
+  "prioridad_ahora": "Generar demanda y leads con ads que conviertan, y convertir eso en un sistema repetible",
+  "prioridades": {
+    "ofertas": 1.0,
+    "leads": 1.0,
+    "advertising": 1.0,
+    "psicologia": 0.9,
+    "copywriting": 0.9,
+    "growth": 0.9,
+    "ia-growth": 0.8,
+    "estrategia": 0.7,
+    "ventas": 0.6,
+    "sistemas": 0.6,
+    "mentalidad": 0.4,
+    "libros": 0.6
+  },
+  "canales_confiables": [
+    {
+      "handle": "AlexHormozi",
+      "speaker": "Alex Hormozi",
+      "temas": [
+        "ofertas",
+        "leads",
+        "ventas"
+      ]
+    },
+    {
+      "handle": "LeilaHormozi",
+      "speaker": "Leila Hormozi",
+      "temas": [
+        "sistemas",
+        "mentalidad"
+      ]
+    },
+    {
+      "handle": "GregLaVecchia",
+      "speaker": "Greg LaVecchia",
+      "temas": [
+        "advertising",
+        "estrategia",
+        "copywriting"
+      ]
+    },
+    {
+      "handle": "LennysPodcast",
+      "speaker": "Lenny's Podcast",
+      "temas": [
+        "growth",
+        "estrategia"
+      ]
+    },
+    {
+      "handle": "GregIsenberg",
+      "speaker": "Greg Isenberg",
+      "temas": [
+        "ia-growth",
+        "estrategia"
+      ]
+    },
+    {
+      "handle": "MyFirstMillionPod",
+      "speaker": "My First Million",
+      "temas": [
+        "estrategia",
+        "growth"
+      ]
+    },
+    {
+      "handle": "ycombinator",
+      "speaker": "Y Combinator",
+      "temas": [
+        "growth",
+        "ia-growth"
+      ]
+    },
+    {
+      "handle": "TheDiaryOfACEO",
+      "speaker": "The Diary of a CEO",
+      "temas": [
+        "mentalidad",
+        "estrategia"
+      ]
+    },
+    {
+      "handle": "thefutur",
+      "speaker": "The Futur",
+      "temas": [
+        "estrategia",
+        "ventas"
+      ]
+    },
+    {
+      "handle": "AlexCattoni",
+      "speaker": "Alex Cattoni",
+      "temas": [
+        "copywriting",
+        "advertising"
+      ]
+    },
+    {
+      "handle": "DanielPriestley",
+      "speaker": "Daniel Priestley",
+      "temas": [
+        "estrategia",
+        "ofertas"
+      ]
+    },
+    {
+      "handle": "noahkagan",
+      "speaker": "Noah Kagan",
+      "temas": [
+        "growth",
+        "leads"
+      ]
+    },
+    {
+      "handle": "a16z",
+      "speaker": "a16z",
+      "temas": [
+        "ia-growth",
+        "estrategia"
+      ]
+    }
+  ],
+  "voces_confiables": [
+    "Alex Hormozi",
+    "Leila Hormozi",
+    "Greg LaVecchia",
+    "Rory Sutherland",
+    "Drew Eric Whitman",
+    "David Ogilvy",
+    "Eugene Schwartz",
+    "Robert Cialdini",
+    "Seth Godin",
+    "Russell Brunson",
+    "Daniel Priestley",
+    "Noah Kagan",
+    "Greg Isenberg",
+    "Lenny Rachitsky",
+    "Andrew Chen",
+    "Elena Verna",
+    "Sean Ellis",
+    "Brian Balfour",
+    "Dan Kennedy",
+    "Gary Halbert",
+    "Joanna Wiebe",
+    "Harry Dry",
+    "Codie Sanchez",
+    "Sam Parr",
+    "Shaan Puri",
+    "Chris Do",
+    "Nir Eyal",
+    "Jonah Berger",
+    "Donald Miller",
+    "April Dunford",
+    "Byron Sharp"
+  ],
+  "busquedas": [
+    "Alex Hormozi $100M Offers",
+    "Alex Hormozi $100M Leads",
+    "Alex Hormozi advertising",
+    "Alex Hormozi value equation",
+    "Greg LaVecchia marketing",
+    "Rory Sutherland advertising psychology",
+    "Rory Sutherland alchemy",
+    "Cashvertising Drew Eric Whitman",
+    "Eugene Schwartz Breakthrough Advertising",
+    "Ogilvy on Advertising lessons",
+    "Robert Cialdini influence persuasion",
+    "Elena Verna growth",
+    "April Dunford positioning",
+    "Lenny's Podcast growth loops",
+    "AI marketing growth Greg Isenberg",
+    "AI agents for marketing growth",
+    "Harry Dry copywriting",
+    "Joanna Wiebe copywriting",
+    "Byron Sharp how brands grow",
+    "Jonah Berger contagious"
+  ],
+  "excluir_palabras": [
+    "get rich quick",
+    "passive income",
+    "dropshipping",
+    "forex",
+    "crypto signals",
+    "make $",
+    "side hustle ideas",
+    "reaction",
+    "prank"
+  ]
+}
